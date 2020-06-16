@@ -22,6 +22,8 @@ public class PeopleTrack : People
         people = FindObjectsOfType<People>();
         //距離陣列的數量 = 人類陣列的數量
         distance = new float[people.Length];
+        //設定目的地(原點)，避免初期導覽錯亂
+        agent.SetDestination(Vector3.zero);
     }
 
     private void Update()
@@ -34,7 +36,7 @@ public class PeopleTrack : People
         //儲存所有人跟此物件的距離
         for (int i = 0; i < people.Length; i++) 
         {
-            if(people[i].transform.name== "Zombie")
+            if(people[i].transform.name== "Zombie" || people[i].transform.name == "Police")
             {
                 //與殭屍的距離改為999
                 distance[i] = 999;
@@ -52,5 +54,20 @@ public class PeopleTrack : People
         target = people[index].transform;
         //追蹤最近目標
         agent.SetDestination(target.position);
+
+        if (agent.remainingDistance <= 1f) HitPeople();
+    }
+
+    private void HitPeople()
+    {
+        target.GetComponent<People>().Dead();
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.tag == "FireBall")
+        {
+            Dead();
+        }
     }
 }

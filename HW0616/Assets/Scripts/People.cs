@@ -30,7 +30,8 @@ public class People : MonoBehaviour
     public void Dead() 
     {
         //動畫控制器.設定觸發("死亡")
-        ani.SetTrigger("死亡");
+        ani.SetTrigger("Death");
+        agent.isStopped = true;
         Destroy(gameObject, 1.5f);
 
     }
