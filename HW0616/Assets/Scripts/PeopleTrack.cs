@@ -36,10 +36,12 @@ public class PeopleTrack : People
         //儲存所有人跟此物件的距離
         for (int i = 0; i < people.Length; i++) 
         {
-            if(people[i].transform.name== "Zombie" || people[i].transform.name == "Police")
+            if(people[i]==null || people[i].transform.name== "Zombie" || people[i].transform.name == "Police")
             {
+                //如果人類死亡，距離改為1000
+                if (people[i] == null) distance[i] = 1000;
                 //與殭屍的距離改為999
-                distance[i] = 999;
+                else distance[i] = 999;
                 //跳過並執行下一個迴圈
                 continue;
             }
@@ -55,12 +57,28 @@ public class PeopleTrack : People
         //追蹤最近目標
         agent.SetDestination(target.position);
 
-        if (agent.remainingDistance <= 1f) HitPeople();
+        if (agent.remainingDistance <= 1f && min!=999) HitPeople();
     }
+
+    private float timerhit;
 
     private void HitPeople()
     {
-        target.GetComponent<People>().Dead();
+        if (timerhit >= 1f)
+        {
+            //計時器歸零
+            timerhit = 0;
+            //代理器停止
+            agent.isStopped = true;
+            ani.SetTrigger("ATK");
+            target.GetComponent<People>().Dead();
+        }
+        else
+        {
+            agent.isStopped = false;
+            //計時器累加
+            timerhit += Time.deltaTime;
+        }
     }
 
     private void OnTriggerEnter(Collider other)
